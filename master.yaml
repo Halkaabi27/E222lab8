@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: heartinfo
+  description: Service to predict heart failure from our module and other stuff
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    name: Hamad Alkaabi
+  license:
+    name: Apache
+paths:
+  /prediction/{id}:
+    get:
+      tags:
+        - predict
+      operationId: prediction.my_prediction
+      description: Return data from model based on inputs
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: array
+            items:
+              type: number
+            minItems: 1
+          style: simple
+          explode: true
+        - in: query
+          name: metadata
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 'prediction'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CPU'
+  /confusion:
+    get:
+      tags:
+        - Confusion Matrix
+      operationId: functions.confusion_matrix
+      description: Return Confusion matrix of TP,FP,TN and FN
+      responses:
+        '200':
+          description: 'confusion matrix'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OS'
+  /graph:
+    get:
+      tags:
+        - Graph
+      operationId: functions.print_graph
+      description: Return ROC graph of our model
+      responses:
+        '200':
+          description: 'print graph'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CPU'
+
+  /file/<filename>:
+    patch:
+      tags:
+        - Update
+      summary: change an existing data without replacing the whole resource
+      operationId: functions.update_data
+      parameters:
+        - name: filename
+          in: query
+          description: Update a file
+          required: true
+          schema:
+            type: string 
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+    post:
+      tags:
+        - Upload
+      summary: Upload a file 
+      operationId: functions.upload
+      parameters:
+        - name: filename
+          in: query
+          description: filename to be uploaded 
+          required: true
+          schema:
+            type: string 
+      responses:
+        '405':
+          description: Invalid input
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+    get:
+      tags:
+        - Download
+      summary: Download a file
+      operationId: functions.download
+      responses:
+        '405':
+          description: Invalid input
+    delete:
+      tags:
+        - Delete
+      summary: Delete a file
+      operationId: functions.delete
+      responses:
+        '405':
+          description: Invalid input
+  /list:
+    get:
+      tags:
+        - List 
+      operationId: functions.list_files
+      description: Returns a list of files inside the current directory
+      responses:
+        '200':
+          description: 'Filenames'
+servers:
+  - url: 'http://localhost:8080/API-Project'
+components:
+  schemas:
+    CPU:
+      type: object
+      required:
+        - model
+      properties:
+        model:
+          type: string
+    OS:
+      type: object
+      required:
+        - model
+      properties:
+        model:
+          type: string
